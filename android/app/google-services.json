@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "111760240138",
+    "firebase_url": "https://campusrecruitementsystem-e95c7.firebaseio.com",
+    "project_id": "campusrecruitementsystem-e95c7",
+    "storage_bucket": "campusrecruitementsystem-e95c7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:111760240138:android:13547208e8d9c0411bf9f3",
+        "android_client_info": {
+          "package_name": "com.campusrsystem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "111760240138-et4krv9mktf5arv4gem04cb9vn4ftd9a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.campusrsystem",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "111760240138-vsoqsun5nob7tq52jdi10ot03dqujl9j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4xFdiMM3KXdIR3dQpOVLyew1ayoeDfJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "111760240138-vsoqsun5nob7tq52jdi10ot03dqujl9j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
