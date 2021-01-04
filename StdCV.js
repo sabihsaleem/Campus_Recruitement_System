@@ -17,122 +17,50 @@ import {
 } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-class a extends React.Component {
+class StdCV extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       list: [],
       selectedIndex: null,
-      jKey: '',
-      compKey: '',
-      applied: [],
-      aa: [],
+      jobIDs: [],
     };
   }
 
-  emptyComponent = () => {
-    // if(this.state.list.length===null){
-    //   this.props.navigation.goBack();
-
-    // }
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: wp('100%'),
-          height: hp('100%'),
-        }}>
-        <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
-          <View>
-            <Text
-              style={{
-                color: 'black',
-                fontWeight: 'bold',
-                fontSize: 26,
-                marginBottom: 100,
-              }}>
-              oops! There's no data here!
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  componentDidMount = async () => {
-    console.log('jsonValue1', this.props.route.params.item.apply);
-    console.log(
-      'this.props.route.params.item.jobKey',
-      this.props.route.params.item.jobKey,
-    );
-    const user = auth().currentUser;
-    console.log('currentUser', user);
-
-    firebase
-      .database()
-      .ref('company')
-      .on('value', (snapshot) => {
-        // console.log("23snapshot.val()", snapshot.val())
-        const getValue = snapshot.val();
-        // console.log("getValue", getValue)
-        let array = [];
-        for (let ckey in getValue) {
-          // console.log("key", key)
-          const value = {...getValue[ckey], ckey};
-          array.push(value);
-        }
-        console.log(array, '23accc');
-        const currentData = array.filter((el) => el.email === user.email);
-        console.log('currentData', currentData);
-        console.log('currentData[0].ckey', currentData[0].ckey);
-        console.log('currentData[0].jobs', currentData[0].jobs);
-        const data = [];
-        let c = currentData[0].jobs;
-        for (const key in c) {
-          let v = {...c[key], key};
-          data.push(v);
-        }
-        console.log('{data}', data);
-        // let deleteJob = "companay/"+currentData[0].ckey+"/jobs/"+item.jobKey
-        // console.log("{deleteJob}",deleteJob)
-        this.setState({
-          jKey: this.props.route.params.item.jobKey,
-          compKey: currentData[0].ckey,
-        });
-      });
-
-    const list = [];
-    let x = this.props.route.params.item.apply;
-    for (const keyA in x) {
-      let v = {...x[keyA], keyA};
-      list.push(v);
+  componentDidMount() {
+    console.log('propsCV', this.props);
+    console.log('data', this.props.route.params.item.cv);
+    const c = this.props.route.params.item.cv;
+    let a = [];
+    for (let i in c) {
+      // console.log("i",i)
+      const z = {...c[i]};
+      a.push(z);
     }
-    console.log('{list}', list);
+    console.log('5', a);
+    let aa = [];
+    for (let j in c) {
+      // console.log("8",j)
+      const zz = {...c[j], j};
+      aa.push(zz.j);
+    }
+    console.log('56', aa[0]);
     this.setState({
-      list,
+      list: a,
+      jobIDs: aa[0],
     });
-  };
+  }
 
-  Delete() {
-    console.log('{compKey}', this.state.compKey);
-    console.log('{jKey}', this.state.jKey);
-    console.log('{Akey}', this.state.list[0].keyA);
-    let deleteApply =
-      'company/' +
-      this.state.compKey +
-      '/jobs/' +
-      this.state.jKey +
-      '/apply/' +
-      this.state.list[0].keyA;
-    console.log('{deleteJob}', deleteApply);
-    firebase.database().ref(deleteApply).remove();
+  Delete(index, item) {
+    let s = this.props.route.params.stdKey;
+    console.log(s);
+    let deleted = this.state.jobIDs;
+    let x = 'student/' + s + '/cv';
+    console.log('del12', x);
+    // firebase.database().ref(del).remove().child(deleted)
   }
 
   render() {
-    console.log(this.state.list, 'apply');
-
     return (
       <View
         style={{
@@ -168,12 +96,12 @@ class a extends React.Component {
               </TouchableOpacity>
               <Text
                 style={{
-                  marginHorizontal: 40,
+                  marginHorizontal: 80,
                   fontSize: 20,
                   fontWeight: 'bold',
                 }}>
                 {' '}
-                Applied Students List{' '}
+                Student CV List{' '}
               </Text>
             </View>
           </View>
@@ -182,8 +110,7 @@ class a extends React.Component {
             <FlatList
               style={styles.list}
               data={this.state.list}
-              ListEmptyComponent={() => this.emptyComponent()}
-              renderItem={({item, index}) => (
+              renderItem={({item, index, a, b}) => (
                 <View
                   style={{
                     borderRadius: 15,
@@ -210,15 +137,11 @@ class a extends React.Component {
                       }}>
                       {item.name}
                     </Text>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
+                    <View style={{flexDirection: 'row'}}>
                       <Text
                         style={{
                           marginVertical: 3,
-                          marginHorizontal: 20,
+                          marginHorizontal: 30,
                           color: 'black',
                           fontSize: 16,
                           width: '25%',
@@ -231,21 +154,16 @@ class a extends React.Component {
                           marginHorizontal: 3,
                           color: 'black',
                           fontSize: 16,
-                          width: '55%',
-                          textAlign: 'left',
+                          width: '50%',
                         }}>
                         {item.description}
                       </Text>
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
+                    <View style={{flexDirection: 'row'}}>
                       <Text
                         style={{
                           marginVertical: 3,
-                          marginHorizontal: 20,
+                          marginHorizontal: 30,
                           color: 'black',
                           fontSize: 16,
                           width: '25%',
@@ -258,25 +176,21 @@ class a extends React.Component {
                           marginHorizontal: 3,
                           color: 'black',
                           fontSize: 16,
-                          width: '55%',
+                          width: '50%',
                         }}>
                         {item.education}
                       </Text>
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
+                    <View style={{flexDirection: 'row'}}>
                       <Text
                         style={{
                           marginVertical: 3,
-                          marginHorizontal: 20,
+                          marginHorizontal: 30,
                           color: 'black',
                           fontSize: 16,
                           width: '25%',
                         }}>
-                        Email
+                        Percentage:
                       </Text>
                       <Text
                         style={{
@@ -284,20 +198,16 @@ class a extends React.Component {
                           marginHorizontal: 3,
                           color: 'black',
                           fontSize: 16,
-                          width: '55%',
+                          width: '50%',
                         }}>
-                        {item.email}
+                        {item.percentage}
                       </Text>
                     </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                      }}>
+                    <View style={{flexDirection: 'row'}}>
                       <Text
                         style={{
                           marginVertical: 3,
-                          marginHorizontal: 20,
+                          marginHorizontal: 30,
                           color: 'black',
                           fontSize: 16,
                           width: '25%',
@@ -310,7 +220,7 @@ class a extends React.Component {
                           marginHorizontal: 3,
                           color: 'black',
                           fontSize: 16,
-                          width: '55%',
+                          width: '50%',
                         }}>
                         {item.skills}
                       </Text>
@@ -325,8 +235,7 @@ class a extends React.Component {
                     }}>
                     <TouchableOpacity
                       style={{
-                        backgroundColor:
-                          this.state.selectedIndex === true ? 'red' : '#f39c12',
+                        backgroundColor:'#f39c12',
                         borderRadius: 10,
                         marginVertical: 5,
                         marginHorizontal: 10,
@@ -363,11 +272,11 @@ class a extends React.Component {
 
 const styles = StyleSheet.create({
   box: {
-    height: hp('100%'),
+    height: '100%',
   },
   list: {
-    width: wp('100%'),
+    width: '100%',
   },
 });
 
-export default a;
+export default StdCV;

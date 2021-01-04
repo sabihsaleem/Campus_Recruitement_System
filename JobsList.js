@@ -17,17 +17,76 @@ import {
 } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-class a extends React.Component {
+class JobsList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       list: [],
       selectedIndex: null,
-      jKey: '',
-      compKey: '',
-      applied: [],
-      aa: [],
+      jobIDs: [],
+      k: '',
     };
+  }
+
+  componentDidMount() {
+    console.log('propsCV', this.props);
+    console.log('data', this.props.route.params.item.jobs);
+    const k = this.props.route.params.jobId;
+    console.log(k);
+    const c = this.props.route.params.item.jobs;
+    let a = [];
+    for (let i in c) {
+      // console.log("i",i)
+      const z = {...c[i]};
+      a.push(z);
+    }
+    console.log('5', a);
+    let aa = [];
+    for (let j in c) {
+      // console.log("8",j)
+      const zz = {...c[j], j};
+      aa.push(zz.j);
+    }
+    console.log('56', aa[0]);
+    this.setState({
+      list: a,
+      jobIDs: aa[0],
+      k,
+    });
+  }
+
+  Applied(index, item) {
+    const {k, jobIDs} = this.state
+    this.state.k[index], this.state.jobIDs[index];
+    console.log('props', this.props);
+    this.setState({
+      selectedIndex: index + 1,
+    });
+    this.props.navigation.navigate('StdApplied', {
+      item,
+      companykey: k,
+      jobkey: jobIDs,
+    });
+    console.log('s', item.apply);
+  }
+
+  Delete(index, item) {
+    // console.log("{job key}",this.state.jobIDs[0])
+    const k = this.props.route.params.jobId;
+    // console.log(k)
+    let deleted = this.state.jobIDs;
+    let x = 'company/' + k + '/jobs/';
+    let del = x + deleted;
+    console.log('del12', del);
+    firebase.database().ref(del).remove();
+    this.setState({
+      selectedIndex: index + 1,
+    });
+    //   this.props.navigation.navigate('CV',
+    //   {
+    //     item,
+    //   })
+    console.log('s', item);
   }
 
   emptyComponent = () => {
@@ -61,87 +120,13 @@ class a extends React.Component {
     );
   };
 
-  componentDidMount = async () => {
-    console.log('jsonValue1', this.props.route.params.item.apply);
-    console.log(
-      'this.props.route.params.item.jobKey',
-      this.props.route.params.item.jobKey,
-    );
-    const user = auth().currentUser;
-    console.log('currentUser', user);
-
-    firebase
-      .database()
-      .ref('company')
-      .on('value', (snapshot) => {
-        // console.log("23snapshot.val()", snapshot.val())
-        const getValue = snapshot.val();
-        // console.log("getValue", getValue)
-        let array = [];
-        for (let ckey in getValue) {
-          // console.log("key", key)
-          const value = {...getValue[ckey], ckey};
-          array.push(value);
-        }
-        console.log(array, '23accc');
-        const currentData = array.filter((el) => el.email === user.email);
-        console.log('currentData', currentData);
-        console.log('currentData[0].ckey', currentData[0].ckey);
-        console.log('currentData[0].jobs', currentData[0].jobs);
-        const data = [];
-        let c = currentData[0].jobs;
-        for (const key in c) {
-          let v = {...c[key], key};
-          data.push(v);
-        }
-        console.log('{data}', data);
-        // let deleteJob = "companay/"+currentData[0].ckey+"/jobs/"+item.jobKey
-        // console.log("{deleteJob}",deleteJob)
-        this.setState({
-          jKey: this.props.route.params.item.jobKey,
-          compKey: currentData[0].ckey,
-        });
-      });
-
-    const list = [];
-    let x = this.props.route.params.item.apply;
-    for (const keyA in x) {
-      let v = {...x[keyA], keyA};
-      list.push(v);
-    }
-    console.log('{list}', list);
-    this.setState({
-      list,
-    });
-  };
-
-  Delete() {
-    console.log('{compKey}', this.state.compKey);
-    console.log('{jKey}', this.state.jKey);
-    console.log('{Akey}', this.state.list[0].keyA);
-    let deleteApply =
-      'company/' +
-      this.state.compKey +
-      '/jobs/' +
-      this.state.jKey +
-      '/apply/' +
-      this.state.list[0].keyA;
-    console.log('{deleteJob}', deleteApply);
-    firebase.database().ref(deleteApply).remove();
-  }
-
   render() {
-    console.log(this.state.list, 'apply');
-
+    const {k, jobIDs} = this.state
+    console.log(k, 'this.state.k');
+    console.log(jobIDs, '{Jobs IDS}');
     return (
       <View
-        style={{
-          flex: 1,
-          resizeMode: 'cover',
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#f98b34',
-        }}>
+        style={styles.mainView}>
         <ScrollView>
           <View
             style={{
@@ -168,12 +153,12 @@ class a extends React.Component {
               </TouchableOpacity>
               <Text
                 style={{
-                  marginHorizontal: 40,
+                  marginHorizontal: 100,
                   fontSize: 20,
                   fontWeight: 'bold',
                 }}>
                 {' '}
-                Applied Students List{' '}
+                Jobs List{' '}
               </Text>
             </View>
           </View>
@@ -185,20 +170,9 @@ class a extends React.Component {
               ListEmptyComponent={() => this.emptyComponent()}
               renderItem={({item, index}) => (
                 <View
-                  style={{
-                    borderRadius: 15,
-                    marginVertical: 5,
-                    borderWidth: 2,
-                    width: '95%',
-                    alignSelf: 'center',
-                    backgroundColor: '#e06100',
-                    borderColor: '#67bae3',
-                  }}>
+                  style={styles.flatlistView}>
                   <View
-                    style={{
-                      marginVertical: 5,
-                      justifyContent: 'space-between',
-                    }}>
+                    style={styles.flatlistViewInner}>
                     <Text
                       style={{
                         marginVertical: 3,
@@ -218,10 +192,10 @@ class a extends React.Component {
                       <Text
                         style={{
                           marginVertical: 3,
-                          marginHorizontal: 20,
+                          marginHorizontal: 30,
                           color: 'black',
                           fontSize: 16,
-                          width: '25%',
+                          width: '30%',
                         }}>
                         Description:
                       </Text>
@@ -231,8 +205,7 @@ class a extends React.Component {
                           marginHorizontal: 3,
                           color: 'black',
                           fontSize: 16,
-                          width: '55%',
-                          textAlign: 'left',
+                          width: '60%',
                         }}>
                         {item.description}
                       </Text>
@@ -245,12 +218,12 @@ class a extends React.Component {
                       <Text
                         style={{
                           marginVertical: 3,
-                          marginHorizontal: 20,
+                          marginHorizontal: 30,
                           color: 'black',
                           fontSize: 16,
-                          width: '25%',
+                          width: '30%',
                         }}>
-                        Education:
+                        Start Date:
                       </Text>
                       <Text
                         style={{
@@ -258,9 +231,9 @@ class a extends React.Component {
                           marginHorizontal: 3,
                           color: 'black',
                           fontSize: 16,
-                          width: '55%',
+                          width: '60%',
                         }}>
-                        {item.education}
+                        {item.startDate}
                       </Text>
                     </View>
                     <View
@@ -271,12 +244,12 @@ class a extends React.Component {
                       <Text
                         style={{
                           marginVertical: 3,
-                          marginHorizontal: 20,
+                          marginHorizontal: 30,
                           color: 'black',
                           fontSize: 16,
-                          width: '25%',
+                          width: '30%',
                         }}>
-                        Email
+                        End Date:
                       </Text>
                       <Text
                         style={{
@@ -284,9 +257,9 @@ class a extends React.Component {
                           marginHorizontal: 3,
                           color: 'black',
                           fontSize: 16,
-                          width: '55%',
+                          width: '60%',
                         }}>
-                        {item.email}
+                        {item.endDate}
                       </Text>
                     </View>
                     <View
@@ -297,10 +270,10 @@ class a extends React.Component {
                       <Text
                         style={{
                           marginVertical: 3,
-                          marginHorizontal: 20,
+                          marginHorizontal: 30,
                           color: 'black',
                           fontSize: 16,
-                          width: '25%',
+                          width: '30%',
                         }}>
                         Skills:
                       </Text>
@@ -310,42 +283,30 @@ class a extends React.Component {
                           marginHorizontal: 3,
                           color: 'black',
                           fontSize: 16,
-                          width: '55%',
+                          width: '60%',
                         }}>
                         {item.skills}
                       </Text>
                     </View>
                   </View>
                   <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      marginHorizontal: 10,
-                      marginVertical: 5,
-                    }}>
+                    style={styles.appliedView}>
                     <TouchableOpacity
-                      style={{
-                        backgroundColor:
-                          this.state.selectedIndex === true ? 'red' : '#f39c12',
-                        borderRadius: 10,
-                        marginVertical: 5,
-                        marginHorizontal: 10,
-                        alignItems: 'center',
-                        width: wp('85%'),
-                        height: 40,
-                        justifyContent: 'center',
-                        borderColor: 'white',
-                        borderWidth: 2,
-                      }}
+                      style={styles.appliedButton}
+                      onPress={() => this.Applied(index, item)}>
+                      <Text
+                        style={styles.appliedText}>
+                        Applied Data
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View
+                    style={styles.deleteView}>
+                    <TouchableOpacity
+                      style={styles.deleteButton}
                       onPress={() => this.Delete(index, item)}>
                       <Text
-                        style={{
-                          marginVertical: 3,
-                          marginHorizontal: 10,
-                          fontWeight: 'bold',
-                          color: 'white',
-                          fontSize: 20,
-                        }}>
+                        style={styles.deleteText}>
                         Delete
                       </Text>
                     </TouchableOpacity>
@@ -362,12 +323,82 @@ class a extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  mainView:{
+    flex: 1,
+    resizeMode: 'cover',
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#f98b34',
+  },
   box: {
     height: hp('100%'),
   },
   list: {
     width: wp('100%'),
   },
+  deleteText:{
+    marginVertical: 3,
+    marginHorizontal: 10,
+    fontWeight: 'bold',
+    color: 'white',
+    fontSize: 20,
+  },
+  deleteButton:{
+    backgroundColor:'#f39c12',
+    borderRadius: 10,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    alignItems: 'center',
+    width: wp('85%'),
+    height: 40,
+    justifyContent: 'center',
+    borderColor: 'white',
+    borderWidth: 2,
+  },
+  deleteView:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    marginVertical: 5,
+  },
+  appliedText:{
+    marginVertical: 3,
+    marginHorizontal: 10,
+    fontWeight: 'bold',
+    color: 'white',
+    fontSize: 20,
+  },
+  appliedButton:{
+    backgroundColor:'#f39c12',
+    borderRadius: 10,
+    marginVertical: 5,
+    marginHorizontal: 10,
+    alignItems: 'center',
+    width: wp('85%'),
+    height: 40,
+    justifyContent: 'center',
+    borderColor: 'white',
+    borderWidth: 2,
+  },
+  appliedView:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    marginVertical: 5,
+  },
+  flatlistView:{
+    borderRadius: 15,
+    marginVertical: 5,
+    borderWidth: 2,
+    width: '95%',
+    alignSelf: 'center',
+    backgroundColor: '#e06100',
+    borderColor: '#67bae3',
+  },
+  flatlistView:{
+    marginVertical: 5,
+    justifyContent: 'space-between',
+  }
 });
 
-export default a;
+export default JobsList;

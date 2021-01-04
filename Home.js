@@ -3,6 +3,8 @@ import { StyleSheet, View, TextInput, Text, ImageBackground, TouchableOpacity, S
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {firebase} from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let config = {
     appId: '1:848270836568:android:a43f0eeb080e7b6a015b2d',
@@ -21,6 +23,55 @@ let config = {
 
 export default class Home extends React.Component{
 
+
+    
+    componentDidMount(){
+        console.log("NAVVV", this.props)
+        AsyncStorage.getItem('@User').then((
+          value => {
+          console.log(JSON.parse(value))
+          let d = JSON.parse(value)
+          let data=[] 
+          for (const element in d) {
+              // console.log(element);
+              value={...d[element],element}
+              data.push(
+                  value
+              )
+          }
+          console.log("data",data)
+        //   console.log("data[0]",data[0][0].isCompany)
+        //   let dataValue = data[0].isAdmin
+          if(value === null){
+            // this.props
+            console.log("null")
+            this.props.navigation.navigate('Home')
+            
+          }else {
+            // console.log("value",dataValue)
+            
+    
+            if(data[0].isAdmin===true){
+              //redirect to admin
+              console.log("AdminHome")
+              this.props.navigation.navigate('AdminHome')
+            }
+            else if(data[0].isAdmin ==false) {
+              //redirect to student
+              console.log("StdHome")
+              this.props.navigation.navigate('StdHome')
+            }else{
+                if(data[0][0].isCompany===true ){
+              //redirect to companyn
+              console.log("CompHome")
+              this.props.navigation.navigate('CompHome')
+            }
+            }
+            
+          }
+        }))
+    
+      }
     constructor(props) {
         super(props);
         this.state = {
@@ -60,19 +111,7 @@ export default class Home extends React.Component{
 
                                     <View style={styles.items}
                                     >
-                                        <View
-                                            style={styles.touchableOpacity}
-                                        >
-                                            <TouchableOpacity
-                                            style={styles.button}
-                                            onPress={()=> this.signup()}
-                                            >
-                                                <Text style={styles.buttonText}
-                                                >
-                                                Registration
-                                                </Text>
-                                            </TouchableOpacity>
-                                        </View>
+
                                         <View
                                             style={styles.touchableOpacity}
                                         >
@@ -82,10 +121,24 @@ export default class Home extends React.Component{
                                             >
                                                 <Text style={styles.buttonText}
                                                 >
-                                                Signin
+                                                Login
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>
+                                        <View
+                                            style={styles.touchableOpacity}
+                                        >
+                                            <TouchableOpacity
+                                            style={styles.button}
+                                            onPress={()=> this.signup()}
+                                            >
+                                                <Text style={styles.buttonText}
+                                                >
+                                                Register
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        
                                     </View>
                                     
                             </View>
@@ -128,24 +181,32 @@ const styles = StyleSheet.create({
     //container1 View
     container1: {
         height: "100%",
+        // flex:0.5,
+        // backgroundColor:"red",
         marginVertical: 110,
-        alignSelf:'center'
+        // alignSelf:'center',
+        // justifyContent:"center",
+        // alignItems:"center",
+        // width:"50%",
+        width: wp('95%')
     },
     items:{
-        marginHorizontal:25,
+        marginHorizontal:10,
         marginVertical:20,
+        // width:"98%",
     },
     touchableOpacity:{
-        marginHorizontal:20,
+        // marginHorizontal:20,
         marginVertical:30,
     },
     button:{
-        backgroundColor: '#e06100',
+        backgroundColor: '#f39c12',
         borderRadius: 10,
         borderWidth:2,
-        width:400,
+        // width:"100%",
         height:60,
         borderColor: '#67bae3',
+        width: wp('95%')
     },
     buttonText:{
         marginVertical:11,

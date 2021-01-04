@@ -3,6 +3,7 @@ import { StyleSheet, View, TextInput, Text, ImageBackground, TouchableOpacity, S
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {firebase} from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let config = {
@@ -30,42 +31,135 @@ export default class StdHome extends React.Component{
         };
     }
 
-    componentDidMount(){
+    // componentDidMount(){
+    //     const user = auth().currentUser
+    //     console.log('user',user)
+    //     firebase.database().ref("student").on('value', (snapshot) => {
+    //         // console.log("23snapshot.val()", snapshot.val())
+    //         const getValue = snapshot.val()
+    //         // console.log("getValue", getValue)
+    //         let companyArray = [];
+    //         for (let key in getValue) {
+    //         // console.log("key", key)
+    //         const value =  { ...getValue[key], key}
+    //           companyArray.push(
+    //             value
+    //           );
+    //         }
+    //         console.log(companyArray,'23accc');
+    //         const c = companyArray.filter(el=>el.email.toLowerCase()===user.email.toLowerCase())
+    //         console.log("00000000000000000000",c[0].name)
+    //         this.setState({
+    //           name:c[0].name,
+    //         });
+    //     });
+    // }
+
+    componentDidMount() {
         const user = auth().currentUser
-        console.log('user',user)
+        // console.log('user',user)
+       
+
         firebase.database().ref("student").on('value', (snapshot) => {
-            // console.log("23snapshot.val()", snapshot.val())
-            const getValue = snapshot.val()
-            // console.log("getValue", getValue)
-            let companyArray = [];
-            for (let key in getValue) {
-            // console.log("key", key)
-            const value =  { ...getValue[key], key}
-              companyArray.push(
-                value
-              );
-            }
-            console.log(companyArray,'23accc');
-            const c = companyArray.filter(el=>el.email.toLowerCase()===user.email.toLowerCase())
-            console.log("00000000000000000000",c[0].name)
+        //   console.log("snapshot.val()", snapshot.val())
+          const getValue = snapshot.val()
+        //   console.log("getStudent", getValue)
+          let array = [];
+          for (let key in getValue) {
+        //   console.log("studentKey", key)
+          const value =  { ...getValue[key], key}
+            array.push(
+              value
+            );
+          }
+          console.log(array,'studentList');
+          const currentUser =  array.filter(el => el.email.toLowerCase() === user.email.toLowerCase())   
+          console.log(currentUser,"CCCC")
+          AsyncStorage.getItem('@User')
+          .then((res) => JSON.parse(res))
+          .then((resp) => {
+            console.log(resp);
+            console.log('aa', resp[0].name);
             this.setState({
-              name:c[0].name,
+                name:resp[0].name,
             });
-        });
+          })
+          .catch((err) => console.log({err}));
+
+        let x = currentUser[0].cv
+        
+        const cv = []
+        for(let key in x){
+            // console.log("KKK",key)
+            const v = {...x[key],key}
+            cv.push(
+                v
+            )
+        }
+        console.log("ds23",cv[0].key)
+        const cvKey = []
+        for(let key in x){
+            // console.log("KKK235",key)
+            const v = {...x[key],key}
+            cvKey.push(
+                v.key
+            )
+        }
+        console.log("ds2323",cvKey)
+        
+            // firebase.database().ref("student/"+currentUser[0].key+"/cv").on('value', (snapshot) => {
+            //     // console.log("snapshot.val()", snapshot.val())
+            //     const getValue = snapshot.val()
+            //     // console.log("getCV", getValue)
+            //     let array = [];
+            //     for (let key in getValue) {
+            //     // console.log("cVKey", key)
+            //     const value =  { ...getValue[key], key}
+            //     array.push(
+            //         value
+            //     );
+            //     }
+            //     console.log(array,'CV');
+            //     // console.log(array[0].skills,'CV skills');
+            //     // console.log(array[0].description,'CV description');
+            //     // console.log(array[0].education,'CV education');
+            //     this.setState({
+            //         s:array[0].skills,
+            //         cvDescription:array[0].description,
+            //         cvEducation:array[0].education,
+            //     });
+            // })
+          this.setState({
+            email:currentUser[0].email,
+            // currentUser:cu,
+            cv,
+            cvKey:cv[0].key,
+            list: array,
+            name:currentUser[0].name,
+            uid:currentUser[0].key
+          });
+        });        
     }
 
-    student(){
+    companies(){
         this.setState = {
             isLoading: false
         };
         this.props.navigation.navigate('CompDash')
     }
 
-    company(){
+    updatecv(){
         this.setState = {
             isLoading: false
         };
         this.props.navigation.navigate('Jobs')
+    }
+
+    profile(){
+        this.setState = {
+            isLoading: false
+        };
+        this.props.navigation.navigate('AdminProfile')
     }
 
     signOut(){
@@ -74,10 +168,12 @@ export default class StdHome extends React.Component{
         .then(() => {
             console.log('User signed out!')
             this.props.navigation.navigate('Home')
+            AsyncStorage.removeItem('@User')
         });
     }
 
     render() {
+        // console.log(this.state.cvKey,'CV');
         return (
             <View
             style={styles.image}>
@@ -91,13 +187,26 @@ export default class StdHome extends React.Component{
                                 <Text style={styles.textHeader}> {this.state.name} </Text>
                             </View>
 
-                            <View style={styles.container1}>                                        
-                                
+                            <View style={styles.container1}>
+
+                                    <View style={{marginVertical:10}}>
+
+                                        <TouchableOpacity
+                                        style={styles.button}
+                                        onPress={()=> this.profile()}
+                                        >
+                                            <Text style={styles.buttonText}>
+                                            Profile
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                    </View>
+
                                     <View>
 
                                         <TouchableOpacity
                                         style={styles.button}
-                                        onPress={()=> this.student()}
+                                        onPress={()=> this.companies()}
                                         >
                                             <Text style={styles.buttonText}>
                                             Companies
@@ -106,18 +215,21 @@ export default class StdHome extends React.Component{
 
                                     </View>
                                     
+                                  {/* {
+                                    this.state.cvKey ? null : */}
                                     <View style={{marginVertical:10}}>
 
                                         <TouchableOpacity
                                         style={styles.button}
-                                        onPress={()=> this.company()}
+                                        onPress={()=> this.updatecv()}
                                         >
                                             <Text style={styles.buttonText}>
-                                            Add your CV
+                                        {this.state.cvKey ? "Update Your CV" :"Add your CV"}
                                             </Text>
                                         </TouchableOpacity>
 
                                     </View>
+                                  {/* } */}
 
                                     <View style={{marginTop:"auto"}}>
                                         <TouchableOpacity
@@ -171,16 +283,17 @@ const styles = StyleSheet.create({
     container1: {
         height: 490,
         marginVertical: 60,
+        width: wp('95%')
     },
     text: {
         marginVertical: 7,
         fontWeight: 'bold'
     },
     button:{
-        backgroundColor: '#e06100',
+        backgroundColor: '#f39c12',
         borderRadius: 10,
         borderWidth:2,
-        width:392,
+        width: wp('95%'),
         height:60,
         borderColor: '#67bae3',
         marginHorizontal:10,

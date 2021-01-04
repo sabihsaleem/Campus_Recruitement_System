@@ -12,6 +12,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {firebase} from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 import { RadioButton } from 'react-native-paper';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let config = {
@@ -76,7 +77,7 @@ let config = {
 
     getData = async () => {
       try {
-        const jsonValue = await AsyncStorage.getItem('@currentUser')
+        const jsonValue = await AsyncStorage.getItem('@User')
         console.log("jsonValue1",jsonValue)
         return jsonValue != null ? jsonValue : null;
       } catch(e) {

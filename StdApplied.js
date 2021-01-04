@@ -17,7 +17,7 @@ import {
 } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-class a extends React.Component {
+class StdApplied extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,6 +28,58 @@ class a extends React.Component {
       applied: [],
       aa: [],
     };
+  }
+
+  componentDidMount = async () => {
+    console.log('this.props.route', this.props.route);
+    // console.log("apply",this.props.route.params.item.apply)
+    // console.log("this.props.route.params.companykey",this.props.route.params.companykey)
+    // console.log("this.props.route.params.jobkey",this.props.route.params.jobkey)
+    const jKey = this.props.route.params.jobkey;
+    const c = this.props.route.params.item.apply;
+    const compKey = this.props.route.params.companykey;
+    let a = [];
+    for (let i in c) {
+      console.log('i', i);
+      const z = {...c[i], appliedKey: i};
+      a.push(z);
+    }
+
+    await AsyncStorage.getItem('@User')
+      .then((res) => JSON.parse(res))
+      .then((resp) => {
+        console.log(resp);
+        // console.log("aa"
+        // this.setState({
+        //     applied:data1,
+        // })
+      })
+      .catch((err) => console.log({err}));
+    this.setState({
+      list: a,
+      jKey,
+      compKey,
+    });
+  };
+
+  Delete(index, item) {
+    const {aa, list} = this.state;
+    console.log('this.state.compKey', this.state.compKey);
+    console.log('this.state.jKey', this.state.jKey);
+    console.log({aa, list, item});
+    const selectedKey = item.uid;
+    let deleted = this.state.compKey;
+    let x =
+      'company/' +
+      this.state.compKey +
+      '/jobs/' +
+      this.state.jKey +
+      '/apply/' +
+      item.appliedKey;
+    console.log({x});
+    // let del = x+this.state.jKey+"/apply"
+    // console.log("del12",del)
+    firebase.database().ref(x).remove();
   }
 
   emptyComponent = () => {
@@ -61,77 +113,8 @@ class a extends React.Component {
     );
   };
 
-  componentDidMount = async () => {
-    console.log('jsonValue1', this.props.route.params.item.apply);
-    console.log(
-      'this.props.route.params.item.jobKey',
-      this.props.route.params.item.jobKey,
-    );
-    const user = auth().currentUser;
-    console.log('currentUser', user);
-
-    firebase
-      .database()
-      .ref('company')
-      .on('value', (snapshot) => {
-        // console.log("23snapshot.val()", snapshot.val())
-        const getValue = snapshot.val();
-        // console.log("getValue", getValue)
-        let array = [];
-        for (let ckey in getValue) {
-          // console.log("key", key)
-          const value = {...getValue[ckey], ckey};
-          array.push(value);
-        }
-        console.log(array, '23accc');
-        const currentData = array.filter((el) => el.email === user.email);
-        console.log('currentData', currentData);
-        console.log('currentData[0].ckey', currentData[0].ckey);
-        console.log('currentData[0].jobs', currentData[0].jobs);
-        const data = [];
-        let c = currentData[0].jobs;
-        for (const key in c) {
-          let v = {...c[key], key};
-          data.push(v);
-        }
-        console.log('{data}', data);
-        // let deleteJob = "companay/"+currentData[0].ckey+"/jobs/"+item.jobKey
-        // console.log("{deleteJob}",deleteJob)
-        this.setState({
-          jKey: this.props.route.params.item.jobKey,
-          compKey: currentData[0].ckey,
-        });
-      });
-
-    const list = [];
-    let x = this.props.route.params.item.apply;
-    for (const keyA in x) {
-      let v = {...x[keyA], keyA};
-      list.push(v);
-    }
-    console.log('{list}', list);
-    this.setState({
-      list,
-    });
-  };
-
-  Delete() {
-    console.log('{compKey}', this.state.compKey);
-    console.log('{jKey}', this.state.jKey);
-    console.log('{Akey}', this.state.list[0].keyA);
-    let deleteApply =
-      'company/' +
-      this.state.compKey +
-      '/jobs/' +
-      this.state.jKey +
-      '/apply/' +
-      this.state.list[0].keyA;
-    console.log('{deleteJob}', deleteApply);
-    firebase.database().ref(deleteApply).remove();
-  }
-
   render() {
-    console.log(this.state.list, 'apply');
+    console.log(this.state.list, 'a');
 
     return (
       <View
@@ -325,8 +308,7 @@ class a extends React.Component {
                     }}>
                     <TouchableOpacity
                       style={{
-                        backgroundColor:
-                          this.state.selectedIndex === true ? 'red' : '#f39c12',
+                        backgroundColor:'#f39c12',
                         borderRadius: 10,
                         marginVertical: 5,
                         marginHorizontal: 10,
@@ -370,4 +352,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default a;
+export default StdApplied;

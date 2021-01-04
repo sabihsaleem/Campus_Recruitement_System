@@ -86,6 +86,7 @@
 import {firebase} from '@react-native-firebase/database';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Routes from './Nav';
 
 let config = {
@@ -103,6 +104,10 @@ if (firebase.apps.length === 0) {
 }
 
 class App extends React.Component {
+  constructor(){
+    super()
+  }
+  
 
 
   render() {
