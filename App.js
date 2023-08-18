@@ -86,7 +86,6 @@
 import {firebase} from '@react-native-firebase/database';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import Routes from './Nav';
 
 let config = {
