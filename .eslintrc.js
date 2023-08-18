@@ -1,5 +1,4 @@
 module.exports = {
-  settings: {
-    'import/ignore': ['react-native'],
-  }
-}
+  root: true,
+  extends: '@react-native',
+};
